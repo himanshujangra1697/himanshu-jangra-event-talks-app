@@ -39,6 +39,149 @@
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Light Theme Variables Override */
+body.light-theme {
+    --bg-app: #f1f5f9;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f8fafc;
+    --border-color: rgba(15, 23, 42, 0.08);
+    --border-color-hover: rgba(59, 130, 246, 0.3);
+    
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+    
+    --accent-x-black: #f8fafc;
+}
+
+body.light-theme .app-header {
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+}
+
+body.light-theme .title-meta h1 {
+    background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+body.light-theme .btn-secondary {
+    background-color: #ffffff;
+    border-color: rgba(15, 23, 42, 0.12);
+}
+body.light-theme .btn-secondary:hover {
+    background-color: #f1f5f9;
+    border-color: rgba(15, 23, 42, 0.2);
+}
+
+body.light-theme .search-box {
+    background: #ffffff;
+}
+
+body.light-theme .search-box input {
+    color: #0f172a;
+}
+
+body.light-theme .chip {
+    background: #ffffff;
+}
+body.light-theme .chip:hover {
+    background: #f1f5f9;
+}
+body.light-theme .chip.active {
+    background: rgba(59, 130, 246, 0.08);
+    color: var(--accent-blue);
+}
+
+body.light-theme .update-card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+body.light-theme .update-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+}
+body.light-theme .update-card.selected {
+    background: #f8fafc;
+}
+
+body.light-theme .update-content code {
+    background: rgba(15, 23, 42, 0.05);
+    color: #0f172a;
+}
+
+body.light-theme .action-icon-btn:hover {
+    background: rgba(15, 23, 42, 0.05);
+}
+
+body.light-theme .composer-card {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+}
+
+body.light-theme .active-item-meta {
+    background: #f8fafc;
+}
+
+body.light-theme .tweet-edit-area textarea {
+    background: #ffffff;
+}
+
+body.light-theme .hashtag-pill span {
+    background: #ffffff;
+}
+body.light-theme .hashtag-pill input:checked + span {
+    background: rgba(29, 155, 240, 0.08);
+}
+
+body.light-theme .template-btn {
+    background: #ffffff;
+}
+body.light-theme .template-btn:hover {
+    background: #f1f5f9;
+}
+body.light-theme .template-btn.active {
+    background: #e2e8f0;
+}
+
+body.light-theme .tweet-preview-box {
+    border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-theme .user-name {
+    color: #0f172a;
+}
+body.light-theme .tweet-preview-text {
+    color: #0f172a;
+}
+body.light-theme .tweet-preview-actions {
+    border-top-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-theme .progress-ring__circle-bg {
+    stroke: #e2e8f0;
+}
+
+body.light-theme .empty-icon-x {
+    background: #ffffff;
+}
+
+body.light-theme .skeleton-date,
+body.light-theme .skeleton-card,
+body.light-theme .skeleton-header,
+body.light-theme .skeleton-line {
+    background: rgba(15, 23, 42, 0.03);
+}
+body.light-theme .skeleton-date::after,
+body.light-theme .skeleton-card::after,
+body.light-theme .skeleton-header::after,
+body.light-theme .skeleton-line::after {
+    background-image: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.4) 20%,
+        rgba(255, 255, 255, 0.6) 60%,
+        rgba(255, 255, 255, 0) 100%
+    );
+}
+
 /* Base Styles */
 * {
     margin: 0;

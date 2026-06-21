@@ -12,6 +12,8 @@ const state = {
 
 // DOM Elements
 const elements = {
+    themeToggleBtn: document.getElementById('theme-toggle-btn'),
+    themeIcon: document.getElementById('theme-icon'),
     exportCsvBtn: document.getElementById('export-csv-btn'),
     refreshBtn: document.getElementById('refresh-btn'),
     searchInput: document.getElementById('search-input'),
@@ -43,12 +45,21 @@ const elements = {
 
 // Initial Setup
 document.addEventListener('DOMContentLoaded', () => {
+    // Check saved theme preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        updateThemeIcon(true);
+    }
     fetchReleaseNotes();
     setupEventListeners();
 });
 
 // Event Listeners
 function setupEventListeners() {
+    // Theme Toggle
+    elements.themeToggleBtn.addEventListener('click', toggleTheme);
+    
     // Refresh, Export and Retry
     elements.exportCsvBtn.addEventListener('click', exportToCSV);
     elements.refreshBtn.addEventListener('click', fetchReleaseNotes);
@@ -465,4 +476,22 @@ function showToast(message, type = 'success') {
             toast.remove();
         }, 300);
     }, 3000);
+}
+
+// Color Theme Toggles
+function toggleTheme() {
+    const isLight = document.body.classList.toggle('light-theme');
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    updateThemeIcon(isLight);
+    showToast(`${isLight ? 'Light' : 'Dark'} theme applied!`, 'success');
+}
+
+function updateThemeIcon(isLight) {
+    if (isLight) {
+        // Moon Icon (light theme active -> click to swap to dark)
+        elements.themeIcon.innerHTML = `<path d="M12.3 22c.59 0 1.09-.46 1.09-1.05a8.99 8.99 0 0 1 8.66-8.66c.59 0 1.05-.5 1.05-1.09 0-5.79-4.83-10.3-10.7-10.2C6.27 1.1 1.77 5.6 1.77 11.75 1.77 17.58 6.47 22 12.3 22zm-1.89-19c3.8 0 7.13 2.5 8.3 6.13a7.003 7.003 0 0 0-8.3 8.3c-3.63-1.17-6.13-4.5-6.13-8.3.01-3.4 2.72-6.13 6.13-6.13z"/>`;
+    } else {
+        // Sun Icon (dark theme active -> click to swap to light)
+        elements.themeIcon.innerHTML = `<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-12.37c-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41zm-12.37 12.37c-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41z"/>`;
+    }
 }
