@@ -12,6 +12,7 @@ const state = {
 
 // DOM Elements
 const elements = {
+    exportCsvBtn: document.getElementById('export-csv-btn'),
     refreshBtn: document.getElementById('refresh-btn'),
     searchInput: document.getElementById('search-input'),
     clearSearchBtn: document.getElementById('clear-search'),
@@ -48,7 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Event Listeners
 function setupEventListeners() {
-    // Refresh and Retry
+    // Refresh, Export and Retry
+    elements.exportCsvBtn.addEventListener('click', exportToCSV);
     elements.refreshBtn.addEventListener('click', fetchReleaseNotes);
     elements.retryBtn.addEventListener('click', fetchReleaseNotes);
     
@@ -399,6 +401,45 @@ function postTweetToX() {
     const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(tweetUrl, '_blank');
     showToast('Opening X (Twitter)...', 'success');
+}
+
+// Export Filtered Updates to CSV
+function exportToCSV() {
+    if (!state.filteredNotes || state.filteredNotes.length === 0) {
+        showToast('No updates to export.', 'error');
+        return;
+    }
+    
+    const csvRows = [];
+    // Header Row
+    csvRows.push(['Date', 'Type', 'Description', 'Link'].map(val => `"${val.replace(/"/g, '""')}"`).join(','));
+    
+    state.filteredNotes.forEach(entry => {
+        const date = entry.title;
+        const link = entry.link || '';
+        
+        entry.items.forEach(item => {
+            const type = item.type;
+            const text = item.content_text;
+            
+            const row = [date, type, text, link].map(val => `"${val.replace(/"/g, '""')}"`).join(',');
+            csvRows.push(row);
+        });
+    });
+    
+    // Create Blob for CSV download to handle any data length safely
+    const csvContent = csvRows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const downloadLink = document.createElement('a');
+    downloadLink.setAttribute('href', url);
+    downloadLink.setAttribute('download', `bigquery_release_notes_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+    
+    showToast('CSV export successful!', 'success');
 }
 
 // Toast notification helper
