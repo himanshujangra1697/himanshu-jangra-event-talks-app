@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigQuery Release Notes Hub & Tweet Companion</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- CSS stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation (GCP styled header) -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="gcp-logo">
+                    <svg viewBox="0 0 24 24" width="28" height="28">
+                        <!-- BigQuery stylized grid/charts icon -->
+                        <path fill="#FF9E0F" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+                    </svg>
+                </div>
+                <div class="title-meta">
+                    <h1>BigQuery Release Notes</h1>
+                    <span class="subtitle">Live feeds & Twitter Sharing companion</span>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <button id="refresh-btn" class="btn btn-primary" title="Refresh notes">
+                    <svg class="icon spinner" viewBox="0 0 24 24" width="18" height="18">
+                        <path fill="currentColor" d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                    </svg>
+                    <span>Refresh</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Controls Dashboard -->
+        <section class="controls-panel">
+            <div class="search-box">
+                <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18">
+                    <path fill="currentColor" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+                <input type="text" id="search-input" placeholder="Search keywords in release notes...">
+                <button id="clear-search" class="clear-btn" style="display: none;">&times;</button>
+            </div>
+            
+            <div class="filters-container">
+                <span class="filter-label">Filter Type:</span>
+                <div class="filter-chips">
+                    <button class="chip active" data-type="all">All Updates</button>
+                    <button class="chip" data-type="feature"><span class="badge badge-feature"></span> Features</button>
+                    <button class="chip" data-type="issue"><span class="badge badge-issue"></span> Issues</button>
+                    <button class="chip" data-type="fixed"><span class="badge badge-fixed"></span> Fixes</button>
+                    <button class="chip" data-type="deprecation"><span class="badge badge-deprecation"></span> Deprecations</button>
+                    <button class="chip" data-type="changed"><span class="badge badge-changed"></span> Changed</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content Area -->
+        <main class="main-layout">
+            <!-- Left Side: Release Notes Feed -->
+            <section class="feed-column">
+                <div class="feed-header">
+                    <h2 class="section-title">Latest Updates</h2>
+                    <span id="feed-status" class="status-indicator">Fetching latest notes...</span>
+                </div>
+
+                <!-- Error Container -->
+                <div id="error-card" class="error-container" style="display: none;">
+                    <div class="error-icon">⚠️</div>
+                    <h3>Failed to Fetch Notes</h3>
+                    <p id="error-message">Something went wrong while retrieving updates. Please try again later.</p>
+                    <button id="retry-btn" class="btn btn-secondary">Retry Now</button>
+                </div>
+
+                <!-- Skeleton Loader -->
+                <div id="skeleton-loader" class="skeleton-container">
+                    <div class="skeleton-group">
+                        <div class="skeleton-date"></div>
+                        <div class="skeleton-card">
+                            <div class="skeleton-header"></div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line short"></div>
+                        </div>
+                    </div>
+                    <div class="skeleton-group">
+                        <div class="skeleton-date"></div>
+                        <div class="skeleton-card">
+                            <div class="skeleton-header"></div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Real Feed Entries -->
+                <div id="feed-entries" class="entries-container" style="display: none;">
+                    <!-- Dynamically filled by JS -->
+                </div>
+                
+                <div id="empty-state" class="empty-state" style="display: none;">
+                    <svg viewBox="0 0 24 24" width="48" height="48">
+                        <path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM17 12H7v-2h10v2zm-4 4H7v-2h6v2zm4-8H7V6h10v2z"/>
+                    </svg>
+                    <h3>No matching updates found</h3>
+                    <p>Try refining your search terms or filters.</p>
+                </div>
+            </section>
+
+            <!-- Right Side: Tweet Companion -->
+            <aside class="composer-column">
+                <div class="sticky-composer">
+                    <div class="composer-card">
+                        <div class="composer-header">
+                            <div class="twitter-logo">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                    <!-- X/Twitter Logo -->
+                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                </svg>
+                            </div>
+                            <h3>Draft Post on X</h3>
+                        </div>
+
+                        <!-- Composer Active Workspace -->
+                        <div id="composer-active-state" style="display: none;">
+                            <div class="active-item-meta">
+                                <div class="meta-label">Selected Note:</div>
+                                <div class="meta-details">
+                                    <span id="selected-item-date" class="meta-date">June 15, 2026</span>
+                                    <span id="selected-item-type" class="meta-type badge-feature">Feature</span>
+                                </div>
+                            </div>
+
+                            <div class="tweet-edit-area">
+                                <textarea id="tweet-textarea" rows="7" placeholder="Draft your tweet..."></textarea>
+                            </div>
+
+                            <div class="composer-utilities">
+                                <!-- Hashtag checkboxes -->
+                                <div class="utility-group">
+                                    <div class="utility-title">Toggle Hashtags:</div>
+                                    <div class="hashtag-toggles">
+                                        <label class="hashtag-pill">
+                                            <input type="checkbox" class="tag-checkbox" value="#BigQuery" checked>
+                                            <span>#BigQuery</span>
+                                        </label>
+                                        <label class="hashtag-pill">
+                                            <input type="checkbox" class="tag-checkbox" value="#GCP" checked>
+                                            <span>#GCP</span>
+                                        </label>
+                                        <label class="hashtag-pill">
+                                            <input type="checkbox" class="tag-checkbox" value="#GoogleCloud" checked>
+                                            <span>#GoogleCloud</span>
+                                        </label>
+                                        <label class="hashtag-pill">
+                                            <input type="checkbox" class="tag-checkbox" value="#DataEngineering">
+                                            <span>#Data</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Preset Templates -->
+                                <div class="utility-group">
+                                    <div class="utility-title">Style Template:</div>
+                                    <div class="template-selector">
+                                        <button class="template-btn active" data-template="default">Default</button>
+                                        <button class="template-btn" data-template="bullet">Excited</button>
+                                        <button class="template-btn" data-template="short">Minimal</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Live Tweet Preview -->
+                            <div class="tweet-preview-section">
+                                <div class="preview-title">Live Feed Preview</div>
+                                <div class="tweet-preview-box">
+                                    <div class="tweet-preview-user">
+                                        <div class="avatar-placeholder">BQ</div>
+                                        <div class="user-meta">
+                                            <span class="user-name">Cloud Explorer</span>
+                                            <span class="user-handle">@cloud_release</span>
+                                        </div>
+                                    </div>
+                                    <div id="tweet-preview-text" class="tweet-preview-text">
+                                        <!-- Will mirror the tweet textarea with formatting -->
+                                    </div>
+                                    <div class="tweet-preview-actions">
+                                        <span class="preview-action">💬 0</span>
+                                        <span class="preview-action">🔁 0</span>
+                                        <span class="preview-action">❤️ 0</span>
+                                        <span class="preview-action">📊 0</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Controls & Count -->
+                            <div class="composer-footer">
+                                <div class="char-counter-container">
+                                    <!-- Progress Circle -->
+                                    <svg class="progress-ring" width="36" height="36">
+                                        <circle class="progress-ring__circle-bg" stroke="#1e293b" stroke-width="3" fill="transparent" r="14" cx="18" cy="18"/>
+                                        <circle id="progress-circle" class="progress-ring__circle" stroke="#1d9bf0" stroke-width="3" fill="transparent" r="14" cx="18" cy="18"/>
+                                    </svg>
+                                    <span id="char-count" class="char-count-number">280</span>
+                                </div>
+                                <div class="composer-actions">
+                                    <button id="copy-tweet-btn" class="btn btn-secondary">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                        </svg>
+                                        Copy
+                                    </button>
+                                    <button id="tweet-btn" class="btn btn-x">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                        </svg>
+                                        Post to X
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Composer Empty State -->
+                        <div id="composer-empty-state" class="composer-empty">
+                            <div class="empty-icon-x">⚡</div>
+                            <h4>No note selected</h4>
+                            <p>Click on any specific update card to draft a social media post instantly. We'll pre-fill the details and let you customize it before tweeting.</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Toast Notifications -->
+        <div id="toast-container" class="toast-container"></div>
+    </div>
+
+    <!-- JS Scripts -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
